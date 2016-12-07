@@ -1,0 +1,12 @@
+{
+  "name": "HelloIonic",
+  "private": "true",
+  "devDependencies": {
+    "ionic": "driftyco/ionic-bower#1.3.2"
+  },
+  "dependencies": {
+    "onezone-datepicker": "*",
+    "ionic-timepicker": "^0.6.0",
+    "angular-local-storage": "^0.5.2"
+  }
+}

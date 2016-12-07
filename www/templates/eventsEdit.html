@@ -1,0 +1,36 @@
+<ion-view view-title="Edit Events" ng-controller="eventsEditCtrl" style="">
+ <ion-nav-buttons side="left">
+   <button class="button button-clear" ng-click="goBack()" >
+    <i class="icon ion-ios-arrow-back"></i> Back
+   </button>
+  </ion-nav-buttons> 
+
+ <ion-content>
+ <div class="editContent">
+  <label class="item item-input">
+   <span class="input-label">Event Date:</span>
+   <input type="text" ng-model="jsonObj.eventDate" disabled="disabled">
+  </label>
+  <label class="item item-input">
+   <span class="input-label">Event Name:</span>
+   <input type="text" ng-model="jsonObj.eventName">
+  </label>
+
+ <div ng-repeat="obj in jsonObj.schedule" style="border-top:5px solid black;" class="editDiv"> 
+  <label class="item item-input">
+   <span class="input-label">From:</span>
+   <input type="text" ng-model="obj.eventStartTime">
+  </label>
+  <label class="item item-input">
+   <span class="input-label">To:</span>
+   <input type="text" ng-model="obj.eventEndTime">
+  </label>
+  <label class="item item-input">
+   <textarea name="eventTask" ng-model="obj.eventTask" placeholder="Description"></textarea>
+  </label>
+ </div> 
+
+ <button style="width: 48%;" class="button button-positive" ng-click="saveChanges()">Save</button>
+</div> 
+ </ion-content>
+</ion-view>

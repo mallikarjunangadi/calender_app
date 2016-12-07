@@ -1,0 +1,61 @@
+.cal-item1 {
+    display: -webkit-flex;
+    display: flex;
+    width:100%;
+    margin: 0;      
+    flex-direction: row;
+    background-color: pink;       
+    background: linear-gradient(pink, white);
+    
+}
+.cal-time1 {   
+    width: 30%;         
+    height:100%;
+}
+.cal-task1 {   
+    background-color: ;        
+    width: 70%;
+    margin-top:0px;           
+    height:100%; 
+}
+.cal-task1 p {
+    height: 100%;
+}
+
+a{
+    text-decoration:none;
+}
+
+#map { 
+  width: 100%;
+  height: 100%;
+}
+
+.scroll {
+  height: 100%;
+}
+
+.editContent .item {
+  background-color: pink;       
+  background: linear-gradient(pink, white);
+}
+
+.editDiv textarea {
+  background-color: pink;
+   background: linear-gradient(pink, white);
+}
+
+input[disabled="disabled"] { 
+  background-color: transparent; 
+}
+
+.iframe-wrapper iframe{
+  width: 100%;
+  height: 100%;
+}
+
+
+#scrollArea {
+  height: 280px;
+  overflow: auto;
+}

@@ -1,0 +1,15 @@
+{		
+	  "event1":{
+	  	"eventName": "childrens day",
+	  	"eventDate": "14th Nov 2016",
+	  	"schedule":[
+	      {"eventStartTime":"08:00", "long":"12.9707204", "lat":"77.5354597", "address":"AR Arcade 9th Main Rd SBI Staff Colony, Hoshalli Extension, Stage 1, Vijaya Nagar Bengaluru, Karnataka 560040", "eventTitle": "discussion", "eventEndTime":"11:50", "eventTask":"Wakeup"},
+	      {"eventStartTime":"12:15", "eventTask":"meeting with the team, discussing the project requirements meeting with the team, discussing the project requirements"},
+	      {"eventStartTime":"13:00", "eventTask":"Lunch with peter"},
+	      {"eventStartTime":"14:30", "eventTask":"Call with johnathan and steve"},
+	      {"eventStartTime":"16:45", "long":"12.9854624", "lat":"77.5064547", "address":"41, 4th Cross Rd Sajjepalya, Nagarbhavi, Bengaluru, Karnataka 560091", "eventEndTime":"17:30", "eventTask":"Project Presentation creation"},
+	      {"eventStartTime":"18:00", "eventTask":"Workout"},
+	      {"eventStartTime":"19:00", "eventTask":"David's b'day party"}
+	     ]		 	
+       }
+}

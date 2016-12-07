@@ -1,0 +1,29 @@
+<ion-view view-title="Calender" ng-controller="calCtrl">
+ <ion-content>
+  <onezone-datepicker datepicker-object="onezoneDatepicker">
+    <button class="button button-block button-outline button-positive show-onezone-datepicker">
+        {{onezoneDatepicker.date | date:'dd MMMM yyyy'}} 
+    </button>
+  </onezone-datepicker>
+
+ <div id="scrollArea">
+  <ion-list>
+   <ion-item class="cal-item1" ng-repeat="value in monthEventsArr" ng-click="showFullEvent($index, value)"> 
+      <div class="cal-time1">
+        <span>{{value.eventStartTime}}</span>
+         <div ng-if="value.eventEndTime != undefined">
+          <span> {{value.eventEndTime}}</span>
+         </div>
+      </div>
+
+      <div class="cal-task1">
+        <div ng-if="value.eventName != undefined"> 
+         <h3> {{value.eventName}} </h3>
+        </div>  
+ 
+       <p> {{value.eventTask}} </p>      
+    </ion-item> 
+  </ion-list> 
+ </div> 
+ </ion-content>
+</ion-view>  
