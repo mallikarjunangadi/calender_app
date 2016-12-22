@@ -114,11 +114,12 @@ angular.module('starter.controller', [])
    }
     })
 
- .controller('calCtrl', function($scope, $http, $state, $q, myFactoryObj, localStorageFactory, localStorageService, $rootScope){
+ .controller('calCtrl', function($scope, $http, $state, $q, serverFactory, myFactoryObj, localStorageFactory, localStorageService, $rootScope){
 
    $scope.$on('$ionicView.beforeEnter', function(event, data) { 
      $scope.onezoneDatepicker.highlights = [];  
-      
+
+      var jsonCalObj = localStorageFactory.getItem('myCalenderEvents'); 
       for(var key in jsonCalObj) {
         var d = new Date(key);       // pushing calender key Dates to hightlights to highlight color 
           $scope.onezoneDatepicker.highlights.push({date:d});
@@ -156,9 +157,16 @@ angular.module('starter.controller', [])
     
     $rootScope.todayDate = new Date();
 
-    var promise = loadFromServer();
-    promise.then(function(value){
-      console.log(value);
+    var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
+    promise.then(function(data){
+      for(var key in data) {
+        var oldObj = data[key];
+        var replacedKey = key.replace(/_/g, ' ');
+        data[replacedKey] = oldObj;
+        delete data[key];
+      }
+      localStorageFactory.submit('myCalenderEvents', data);
+      console.log(data);
       displayMonthEvents($rootScope.todayDate);
     })
 
@@ -207,36 +215,6 @@ angular.module('starter.controller', [])
        }      
    }
 
-   function loadFromServer(){      
-    var deferred = $q.defer();  
-    var req =      
-    { 
-      method: 'POST', 
-        url: "http://192.168.0.13:3000/getEvents",
-     // url: "http://calenderappevents.azurewebsites.net/getEvents",
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }   
-    $http(req).
-     success(function(data, status, headers, config) {
-      console.log(data); 
-      for(var key in data) {
-        var oldObj = data[key];
-        var replacedKey = key.replace(/_/g, ' ');
-        data[replacedKey] = oldObj;
-        delete data[key];
-      }
-      localStorageFactory.submit('myCalenderEvents', data);
-      deferred.resolve('success');
-      console.log(status);
-    }). 
-    error(function(data, status, headers, config) { 
-     console.log(data); 
-     console.log('error '+status); 
-     deferred.reject('fail');
-    });
-    return deferred.promise; 
-   };
-
   function displayMonthEvents(today) {
       var jsonCalObj = localStorageFactory.getItem('myCalenderEvents'); 
       var keyArr2 = [];
@@ -268,12 +246,10 @@ angular.module('starter.controller', [])
      }
      console.log($scope.monthEventsArr);
    }
-  
-
 
 }) 
 
-.controller('addEventsCtrl', function($scope, $http, $ionicHistory, $state, $rootScope, ionicTimePicker, myFactory, localStorageService, localStorageFactory, myFactoryObj){
+.controller('addEventsCtrl', function($scope, $http, $ionicHistory, $state, $rootScope, ionicTimePicker, serverFactory, myFactory, localStorageService, localStorageFactory, myFactoryObj){
     $scope.$on('$ionicView.beforeEnter', function(event, data) {
    
       $scope.editingObj = myFactoryObj.get(); //retrieve obj to edit
@@ -395,10 +371,6 @@ $scope.endTimePick = function() {
   ionicTimePicker.openTimePicker(Obj);
  }
 
-//  console.log($scope.eventObj.eventDate);
-//var obj = myFactoryObj.get();
-//$scope.eventObj.eventDate = obj.eventDateValue;
-
 $scope.gPlace;
 
   $scope.disableTap = function(){
@@ -421,13 +393,17 @@ $scope.save = function(){
   $scope.addDisable = false;
   $scope.saveDisable = true;
 
+
   if(!$scope.isEditingObjUndefined){
-    //console.log('undefined......');  
+     console.log('not undefined......');  
 
      $scope.jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
      $scope.jsonObj = $scope.jsonCalObj[$scope.eventObj.eventDate];     
 
      $scope.jsonObj.events.splice($scope.editingObj.index, 1);
+
+     var doc2send = { eDate : $scope.editingObj.eventDate, eIndex : $scope.editingObj.index, eLength: 1 };    
+     serverFactory.serverToServer(doc2send , "http://192.168.0.13:3000/deleteEvents");
 
      $scope.jsonCalObj[$scope.eventObj.eventDate] = $scope.jsonObj;
      localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj);
@@ -488,6 +464,7 @@ $scope.finish = function(){
   console.log($scope.jsonObj);
 
   if($scope.jsonObj != undefined) {
+
      for(var i=0; i < $scope.eventsArr.length; i++) {
       $scope.jsonObj.events.push($scope.eventsArr[i]);
       console.log($scope.eventsArr[i]);  
@@ -516,7 +493,6 @@ $scope.finish = function(){
 
 $scope.$on('$ionicView.beforeLeave', function(event, data) { 
   $scope.eventsArr = [];
- // myFactoryObj.set({});
   console.log('before leave: array eventsArr cleared')
 });
 
@@ -524,38 +500,12 @@ $scope.$on('$ionicView.beforeLeave', function(event, data) {
    console.log('local storage supported');
   }
 
- function serverToServer(obj) {
-  console.log(obj);
-
-  /*var doc2send =
-  {  
-   name : 'My calender Event',         
-   eventObj : JSON.stringify(obj)        
-  }*/  
-
-var doc2send = {myObj:JSON.stringify(obj)};
-
-console.log(doc2send);
-   
-  var req =              
-  {  
-    method: 'POST', 
-    url: "http://192.168.0.13:3000/addEvents",
-   // url: "http://calenderappevents.azurewebsites.net/addEvents",
-    data: jQuery.param(doc2send), 
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-  }   
-          
-    $http(req).
-    success(function(data, status, headers, config) {
-     console.log(data);
-   //  localStorageFactory.submit('myCalenderEvents', data[0]);
-     console.log(status); 
-  }).
-    error(function(data, status, headers, config) { 
-    console.log(data); 
-    console.log('error '+status);
-  });
+ function serverToServer(obj) {  
+     var doc2send = {myObj:JSON.stringify(obj)};
+     var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/addEvents");
+     promise.then(function(value){
+      console.log(value);
+    })
  }
 
 
@@ -571,7 +521,7 @@ console.log(doc2send);
    }
 })
   
-.controller('showFullEventCtrl', function($scope, $rootScope, $http, $ionicHistory, $state, myFactoryObj, myFactory, localStorageFactory){
+.controller('showFullEventCtrl', function($scope, $rootScope, $http, $ionicHistory, $state, serverFactory, myFactoryObj, myFactory, localStorageFactory){
   $scope.$on('$ionicView.beforeEnter', function(){
   
     $scope.fullEvent = $rootScope.fullEventObj
@@ -600,6 +550,7 @@ console.log(doc2send);
      $scope.jsonObj.events.splice($scope.fullEvent.index, 1);
         
      var remainingEvents = $scope.jsonObj.events.length; 
+
      if(remainingEvents == 0) {
        delete $scope.jsonCalObj[$scope.fullEvent.eventDate];
        localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj);
@@ -614,34 +565,13 @@ console.log(doc2send);
   }
 
   function serverToServer(date, index, len) {
- // console.log(JSON.stringify(obj));
 
-  var doc2send =
-  {  
-   eDate : date,         
-   eIndex : index,
-   eLength: len
-  }  
-   
-  var req =            
-  {  
-    method: 'POST', 
-    url: "http://192.168.0.13:3000/deleteEvents",
-   //url: "http://calenderappevents.azurewebsites.net/addEvents",
-    data: jQuery.param(doc2send), 
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-  }   
-          
-    $http(req).
-    success(function(data, status, headers, config) {
-     console.log(data);
-     console.log(status); 
-  }).
-    error(function(data, status, headers, config) { 
-    console.log(data); 
-    console.log('error '+status);
-  });
- }
+    var doc2send = { eDate : date, eIndex : index, eLength: len };   
+    var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/deleteEvents");
+    promise.then(function(value){
+      console.log(value);
+    }) 
+  }
 
  $scope.goBack = function(){
        myFactoryObj.set({});

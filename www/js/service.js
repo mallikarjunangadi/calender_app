@@ -66,3 +66,42 @@ angular.module('starter.services', [])
        
   }
 })  
+
+.factory("serverFactory", function($http, $q)  {
+   var data;
+
+   function serverToServer(doc2send, Url) {
+    var deferred = $q.defer();  
+    console.log(doc2send);
+  
+    var req =              
+    {  
+      method: 'POST', 
+   //   url: "http://192.168.0.13:3000/addEvents",
+   // url: "http://calenderappevents.azurewebsites.net/addEvents",
+      url: Url,
+      data: jQuery.param(doc2send), 
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }   
+          
+     $http(req).
+     success(function(data, status, headers, config) {
+     console.log(data);
+   //  localStorageFactory.submit('myCalenderEvents', data[0]);
+     deferred.resolve(data);
+     console.log(status); 
+    }).
+     error(function(data, status, headers, config) { 
+      console.log(data); 
+      console.log('error '+status);
+      deferred.reject(data);
+    });
+
+    return deferred.promise;
+   }
+
+   return {
+      serverToServer : serverToServer
+  }
+ 
+})  
