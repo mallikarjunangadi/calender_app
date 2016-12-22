@@ -5,13 +5,14 @@
     <i class="icon ion-ios-arrow-back"></i> Back
    </button>
   </ion-nav-buttons> 
-
+  
+<div ng-hide = "hideEditnDeleteBtn">
  <ion-floating-button bottom="90px" click="deleteEvent()" has-footer="false" button-color="#387ef5" icon="ion-trash-b" icon-color="#fff">
  </ion-floating-button>
- 
+
  <ion-floating-button click="editEvent()" has-footer="false" button-color="#387ef5" icon="ion-edit" icon-color="#fff">
  </ion-floating-button>
-
+</div> 
  <ion-content>
    <ion-list>
 
