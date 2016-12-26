@@ -19,18 +19,33 @@
 
   <label class="item item-input">
   <span class="input-label">Select Location:</span>
-   <input type="text" ng-model="eventObj.address" ng-focus="disableTap()" id="location" googleplace placeholder="Type your Location..."/>
+   <span ng-if="eventObj.address == undefined">
+    <input type="text" ng-model="eventObj.address" ng-focus="disableTap()" id="location" googleplace placeholder="Type your Location..."/>
+   </span>
+   <span ng-if="eventObj.address != undefined">
+    <input type="text" ng-model="eventObj.address" ng-focus="disableTap()" id="location" googleplace />
+   </span> 
   </label>
   
  <div id="main">
   <label class="item item-input inp" ng-click="startTimePick()" >
    <span class="input-label">From:</span>
-   <input id="startText" type="text" name="startDate" ng-model="eventObj.eventStartTime" placeholder="Event Start Time" disabled="disabled"></input>
+   <span ng-if="eventObj.eventStartTime == undefined">
+    <input id="startText" type="text" name="startDate" ng-model="eventObj.eventStartTime" placeholder="Event Start Time" disabled="disabled"></input>
+   </span>
+   <span ng-if="eventObj.eventStartTime != undefined">
+    <input id="startText" type="text" name="startDate" ng-model="eventObj.eventStartTime" disabled="disabled"></input>
+   </span>
   </label>
   
   <label class="item item-input inp" ng-click="endTimePick()" ng-show="endTimeVisibility">
    <span class="input-label">To:</span>
-   <input id="endText" type="text" name="endDate" ng-model="eventObj.eventEndTime" placeholder="Event End Time" disabled="disabled"></input>
+   <span ng-if="eventObj.eventEndTime == undefined"> 
+    <input id="endText" type="text" name="endDate" ng-model="eventObj.eventEndTime" placeholder="Event End Time" disabled="disabled"></input>
+   </span>
+   <span ng-if="eventObj.eventEndTime != undefined"> 
+    <input id="endText" type="text" name="endDate" ng-model="eventObj.eventEndTime" disabled="disabled"></input>
+   </span> 
   </label>
   
   <label class="item item-input inp">

@@ -21,22 +21,27 @@ angular.module('starter.services', [])
   }
 })  
 
-.factory("myFactoryObj", function()  {
-  var userDetails = {};
+.factory("loadFromServerFactory", function(serverFactory, localStorageFactory)  {
 
-  function set(obj) { 
-    userDetails = obj; 
-     console.log('entered set factory')
-  }
-
-  function get() { 
-     return userDetails;
-  }
-
-  return {
-      set : set,
-      get : get 
-  }
+  function loadEvents() {
+    var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
+   // var promise = serverFactory.serverToServer('', "http://calenderappevents.azurewebsites.net/getEvents");
+    promise.then(function(data) {
+        for (var key in data) {
+            var oldObj = data[key];
+            var replacedKey = key.replace(/_/g, ' ');
+            data[replacedKey] = oldObj;
+            delete data[key];
+        }
+        localStorageFactory.submit('myCalenderEvents', data);
+        console.log(data);
+    }) 
+    return;  
+  } 
+   
+    return {
+      loadEvents:loadEvents
+    }
 })  
 
 
@@ -67,11 +72,6 @@ angular.module('starter.services', [])
   }
 })  
 
-
-
-
-
-
 .factory("serverFactory", function($http, $q)  {
    var data;
 
@@ -82,8 +82,6 @@ angular.module('starter.services', [])
     var req =              
     {  
       method: 'POST', 
-   //   url: "http://192.168.0.13:3000/addEvents",
-   // url: "http://calenderappevents.azurewebsites.net/addEvents",
       url: Url,
       data: jQuery.param(doc2send), 
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}

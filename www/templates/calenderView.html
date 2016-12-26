@@ -10,10 +10,10 @@
   <ion-list>
    <ion-item class="cal-item1" ng-repeat="value in monthEventsArr" ng-click="showFullEvent($index, value)"> 
       <div class="cal-time1">
-        <span>{{value.eventStartTime}}</span>
-         <div ng-if="value.eventEndTime != undefined">
+        <span>{{value.eventDate}}</span>
+      <!--   <div ng-if="value.eventEndTime != undefined">
           <span> {{value.eventEndTime}}</span>
-         </div>
+         </div> -->
       </div>
 
       <div class="cal-task1">
