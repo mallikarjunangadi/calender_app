@@ -1,12 +1,18 @@
 <ion-view view-title="Location" ng-controller="MapCtrl">
-  <ion-nav-buttons side="left">
+<!--  <ion-nav-buttons side="left">
    <button class="button button-clear" ng-click="goBack()" >
     <i class="icon ion-ios-arrow-back"></i> Back
    </button>
   </ion-nav-buttons>
+-->
+   <ion-header-bar class="sub-head bar-dark" style="position:relative;" >
+     <button class="button button-clear" ng-click="goBack()" >
+      <i class="icon ion-ios-arrow-back"></i> Back
+     </button> 
+   </ion-header-bar>
 
   <ion-content>
-    <div id="map" data-tap-disabled="true"></div>
+    <div id="eventMap" data-tap-disabled="true"></div>
   </ion-content>
 <!--   <ion-footer-bar class="bar-dark">
     <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate">Find Me</a>

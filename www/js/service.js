@@ -21,29 +21,6 @@ angular.module('starter.services', [])
   }
 })  
 
-.factory("loadFromServerFactory", function(serverFactory, localStorageFactory)  {
-
-  function loadEvents() {
-    var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
-   // var promise = serverFactory.serverToServer('', "http://calenderappevents.azurewebsites.net/getEvents");
-    promise.then(function(data) {
-        for (var key in data) {
-            var oldObj = data[key];
-            var replacedKey = key.replace(/_/g, ' ');
-            data[replacedKey] = oldObj;
-            delete data[key];
-        }
-        localStorageFactory.submit('myCalenderEvents', data);
-        console.log(data);
-    }) 
-    return;  
-  } 
-   
-    return {
-      loadEvents:loadEvents
-    }
-})  
-
 
 .factory("localStorageFactory", function(localStorageService)  {
  
@@ -72,9 +49,31 @@ angular.module('starter.services', [])
   }
 })  
 
-.factory("serverFactory", function($http, $q)  {
-   var data;
+.factory("loadFromServerFactory", function(serverFactory, localStorageFactory)  {
 
+  function loadEvents() {
+    var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
+   // var promise = serverFactory.serverToServer('', "http://calenderappevents.azurewebsites.net/getEvents");
+    promise.then(function(data) {
+        for (var key in data) {
+            var oldObj = data[key];
+            var replacedKey = key.replace(/_/g, ' ');
+            data[replacedKey] = oldObj;
+            delete data[key];
+        }
+        localStorageFactory.submit('myCalenderEvents', data);
+        console.log(data);
+    }) 
+    return;  
+  } 
+   
+    return {
+      loadEvents:loadEvents
+    }
+})  
+
+.factory("serverFactory", function($http, $q, localStorageFactory, $state)  {
+  
    function serverToServer(doc2send, Url) {
     var deferred = $q.defer();  
     console.log(doc2send);
@@ -89,10 +88,24 @@ angular.module('starter.services', [])
           
      $http(req).
      success(function(data, status, headers, config) {
-     console.log(data);
-   //  localStorageFactory.submit('myCalenderEvents', data[0]);
-     deferred.resolve(data);
-     console.log(status); 
+        
+        if(angular.isString(data)){
+          alert(data);  
+          $state.go('calenderView');
+        }
+        
+        for (var key in data) {
+             var oldObj = data[key];
+             var replacedKey = key.replace(/_/g, ' ');
+             data[replacedKey] = oldObj;
+             delete data[key];
+         }
+         localStorageFactory.submit('myCalenderEvents', data);
+         console.log(data);
+
+ //      localStorageFactory.submit('myCalenderEvents', data[0]);
+         deferred.resolve(data);
+         console.log(status); 
     }).
      error(function(data, status, headers, config) { 
       console.log(data); 

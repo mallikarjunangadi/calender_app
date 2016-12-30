@@ -1,12 +1,17 @@
 <ion-view view-title="Events" ng-controller="addEventsCtrl">
- <ion-nav-buttons side="left">
-   <button class="button button-clear" ng-click="goBack()" >
-    <i class="icon ion-ios-arrow-back"></i> Back
-   </button>
-  </ion-nav-buttons> 
-
- <ion-content>
  
+ <ion-header-bar class="sub-head bar-dark" style="position:relative;" >
+   <button class="button button-clear button-positive" style="position:relative; width:auto;display:inline;" ng-click="goBack()">
+   <i class="ion-android-cancel" style="font-size:32px; padding-left:8px; position:absolute; color:white;text-align:center;top:0px;"> </i>
+  </button>
+   
+  <button class="button button-clear button-positive" style="position:absolute; right:35px; width:auto;display:inline;" ng-click="save()">
+   <i class="ion-android-done" style="font-size:30px; padding-right:8px; position:absolute; color:white;text-align:center;top:0px;transform: rotate(0deg);"> </i>
+  </button>
+ </ion-header-bar>  
+  
+ <ion-content>
+ <div id="addEventsDiv">
   <label class="item item-input">
   <span class="input-label">Event Date:</span>
    <input type="text" name="eventDate" ng-model="eventObj.eventDate" placeholder="Event Date" disabled="disabled">
@@ -19,44 +24,22 @@
 
   <label class="item item-input">
   <span class="input-label">Select Location:</span>
-   <span ng-if="eventObj.address == undefined">
     <input type="text" ng-model="eventObj.address" ng-focus="disableTap()" id="location" googleplace placeholder="Type your Location..."/>
-   </span>
-   <span ng-if="eventObj.address != undefined">
-    <input type="text" ng-model="eventObj.address" ng-focus="disableTap()" id="location" googleplace />
-   </span> 
   </label>
   
- <div id="main">
   <label class="item item-input inp" ng-click="startTimePick()" >
    <span class="input-label">From:</span>
-   <span ng-if="eventObj.eventStartTime == undefined">
-    <input id="startText" type="text" name="startDate" ng-model="eventObj.eventStartTime" placeholder="Event Start Time" disabled="disabled"></input>
-   </span>
-   <span ng-if="eventObj.eventStartTime != undefined">
-    <input id="startText" type="text" name="startDate" ng-model="eventObj.eventStartTime" disabled="disabled"></input>
-   </span>
+    <input id="startText" type="text" name="startTime" ng-model="eventObj.eventStartTime" placeholder="Event Start Time" disabled="disabled"></input>
   </label>
-  
+<!--  {{eventObj.eventStartTime | epochToDate}} -->
   <label class="item item-input inp" ng-click="endTimePick()" ng-show="endTimeVisibility">
    <span class="input-label">To:</span>
-   <span ng-if="eventObj.eventEndTime == undefined"> 
-    <input id="endText" type="text" name="endDate" ng-model="eventObj.eventEndTime" placeholder="Event End Time" disabled="disabled"></input>
-   </span>
-   <span ng-if="eventObj.eventEndTime != undefined"> 
-    <input id="endText" type="text" name="endDate" ng-model="eventObj.eventEndTime" disabled="disabled"></input>
-   </span> 
+    <input id="endText" type="text" name="endTime" ng-model="eventObj.eventEndTime" placeholder="Event End Time" disabled="disabled"></input> 
   </label>
   
   <label class="item item-input inp">
    <textarea name="eventTask" ng-model="eventObj.eventTask" placeholder="Description" required></textarea>
   </label>
-    
  </div> 
-
-  <button style="width:48%;" class="button button-positive" ng-disabled="saveDisable"  ng-click="save()">Save</button>  
-  <button style="width:48%;" class="button button-positive" ng-show="visibility" ng-disabled="addDisable" ng-click="add()">Add More Task</button>
-  <button class="button button-positive button-block" ng-show="visibility" ng-click="finish()">Finish</button>
-
  </ion-content>
 </ion-view>

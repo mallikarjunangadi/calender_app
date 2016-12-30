@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'starter.controller', 'starter.directive', 'ionic-timepicker', 'starter.services', 'onezone-datepicker', 'ion-floating-menu', 'LocalStorageModule'])
+angular.module('starter', ['ionic', 'starter.controller', 'starter.filter', 'starter.directive', 'ionic-timepicker', 'starter.services', 'onezone-datepicker', 'ion-floating-menu', 'LocalStorageModule'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -51,12 +51,12 @@ angular.module('starter', ['ionic', 'starter.controller', 'starter.directive', '
     url: '/addEvents',
     templateUrl: 'templates/addEvents.html'
   })
-
+/*
   .state('emptyEventPage', {
     url: '/emptyEventPage',
     templateUrl: 'templates/emptyEventPage.html'
   })
-
+*/
   .state('showFullEvent', {
     url: '/showFullEvent',
     templateUrl: 'templates/showFullEvent.html'

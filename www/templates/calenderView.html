@@ -1,29 +1,31 @@
 <ion-view view-title="Calender" ng-controller="calCtrl">
+ <ion-header-bar class="sub-head bar-dark" style="position:relative;" >
+  <button class="button button-clear button-positive" style="position:relative; width:auto;display:inline;" ng-click="">
+     <i class="ion-android-cancel" style="font-size:32px; padding-left:8px; position:absolute; color:white;text-align:center;top:0px;"> </i>
+  </button>
+ </ion-header-bar>
+<div id="calenderDiv">
  <ion-content>
   <onezone-datepicker datepicker-object="onezoneDatepicker">
-    <button class="button button-block button-outline button-positive show-onezone-datepicker">
-        {{onezoneDatepicker.date | date:'dd MMMM yyyy'}} 
-    </button>
+    
   </onezone-datepicker>
 
  <div id="scrollArea">
   <ion-list>
-   <ion-item class="cal-item1" ng-repeat="value in monthEventsArr" ng-click="showFullEvent($index, value)"> 
-      <div class="cal-time1">
+   <ion-item class="cal-item" ng-repeat="value in monthEventsArr" ng-click="showFullEvent(value)"> 
+      <div class="cal-time">
         <span>{{value.eventDate}}</span>
-      <!--   <div ng-if="value.eventEndTime != undefined">
-          <span> {{value.eventEndTime}}</span>
-         </div> -->
       </div>
 
-      <div class="cal-task1">
+      <div class="cal-task">
         <div ng-if="value.eventName != undefined"> 
-         <h3> {{value.eventName}} </h3>
+         <p> {{value.eventName}} </p>
         </div>  
- 
        <p> {{value.eventTask}} </p>      
     </ion-item> 
   </ion-list> 
  </div> 
+ 
+ </div>
  </ion-content>
 </ion-view>  

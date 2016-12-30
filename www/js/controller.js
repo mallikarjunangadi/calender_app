@@ -1,23 +1,23 @@
 angular.module('starter.controller', []).controller('event1Ctrl', function($scope, $http, $ionicHistory, myFactory, $state, $rootScope, localStorageFactory) {
     $scope.$on('$ionicView.beforeEnter', function(event, data) {
+
         console.log($rootScope.myEventDate);
         var jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
         var jsonObj = jsonCalObj[$rootScope.myEventDate];
-        if (jsonObj == 'undefined') {
-            $state.go('calenderView')
+      
+        if(angular.isUndefined(jsonObj)) {
+          $scope.eventData = [];
+        } else {
+           $scope.eventData = jsonObj.events;
+           $scope.eventDate = jsonObj.eventDate;
         }
-        console.log(jsonObj);
-        $scope.eventData = jsonObj.events;
-        $scope.eventDate = jsonObj.eventDate;
     })
+    
     $scope.addEvents = function() {
         $state.go('addEvents');
     }
-    $scope.showFullEvent = function(index, eventObj) {
+    $scope.showFullEvent = function(eventObj) {
         $rootScope.hideEditnDeleteBtn = false;
-        console.log('index of item: ' + index);
-        eventObj.eventDate = $scope.eventDate
-        eventObj.index = index;
        
         $rootScope.fullEventObj = eventObj;
         $state.go('showFullEvent');
@@ -41,7 +41,7 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
                 zoom: 16,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
-            $scope.map = new google.maps.Map(document.getElementById("map"),mapOptions);
+            $scope.map = new google.maps.Map(document.getElementById("eventMap"),mapOptions);
             console.log("map Ctrl");
             //Marker + infowindow + angularjs compiled ng-click
             var contentString = "<div><a ng-click='clickTest()'>" + address + "</a></div>";
@@ -86,8 +86,6 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
     }
 }).controller('calCtrl', function($scope, $http, $state, $q, serverFactory, localStorageFactory, localStorageService, $rootScope) {
     $scope.$on('$ionicView.beforeEnter', function(event, data) {
-       // pushToHighlights();
-       // displayMonthEvents(todayDate);
        loadEvents();
     });
 
@@ -102,7 +100,7 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
         disablePastDays: false,
         disableSwipe: false,
         disableWeekend: false,
-        showDatepicker: false,
+        showDatepicker: true,
         showTodayButton: true,
         calendarMode: true,
         hideCancelButton: false,
@@ -110,14 +108,16 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
         highlights: [],
         callback: function(value) {
             console.log(value);
-            displayMonthEvents(value);
+            $rootScope.displayMonthEvents(value);
             dateSelected(value);
             todayDate = value;
         }
     };
-
+   
+    console.log($scope.onezoneDatepicker.date);
+    
     var jsonCalObj = localStorageFactory.getItem('myCalenderEvents'); 
-    //create new key in local storage if not exists
+    //first time create new key in local storage if not exists
     if (jsonCalObj == null) {
         localStorageFactory.submit('myCalenderEvents', {});
         jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
@@ -126,31 +126,22 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
 
     loadEvents();   
 
-    $scope.showFullEvent = function showFullEvent(index, eventObj) {
+    $scope.showFullEvent = function showFullEvent(eventObj) {
         $rootScope.hideEditnDeleteBtn = true;
-        console.log('index of item: ' + index);
-        eventObj.index = index;
         $rootScope.fullEventObj = eventObj;
         $state.go('showFullEvent');
     }
 
     function loadEvents() {
-    var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
-   // var promise = serverFactory.serverToServer('', "http://calenderappevents.azurewebsites.net/getEvents");
-     promise.then(function(data) {
-        for (var key in data) {
-            var oldObj = data[key];
-            var replacedKey = key.replace(/_/g, ' ');
-            data[replacedKey] = oldObj;
-            delete data[key];
-        }
-        localStorageFactory.submit('myCalenderEvents', data);
-        console.log(data);
-        pushToHighlights();  
-        displayMonthEvents(todayDate);
-     });
+     //   var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
+        var promise = serverFactory.serverToServer('', "http://calenderappevents.azurewebsites.net/getEvents");
+        promise.then(function(data) {
+           console.log(data);
+           pushToHighlights();  
+           $rootScope.displayMonthEvents(todayDate);
+        });
     }
-
+     
     function pushToHighlights() {
         $scope.onezoneDatepicker.highlights = [];
         console.log('entered push to highlights');
@@ -168,27 +159,16 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
         var str = value.toString().substr(4, 11);
         $rootScope.myEventDate = str;
         console.log(str);
-        var jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
-        var keyArr = [];
-        for (var key in jsonCalObj) {
-            keyArr.push(key);
-        }
-        if (keyArr.indexOf(str) > -1) {
-            $state.go('event1');
-        } else {
-            $state.go('emptyEventPage');
-        }
+        $state.go('event1');
     }
 
-    function displayMonthEvents(today) {
+    $rootScope.displayMonthEvents = function displayMonthEvents(today) {
         var jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
         var keyArr2 = [];
         for (var key in jsonCalObj) {
             keyArr2.push(key);
         }
         console.log(jsonCalObj);
-        console.log(keyArr2.sort());
-        console.log(today);
         var thisMonth = today.toString().substr(4, 3);
         var thisYear = today.toString().substr(11, 4);
         console.log("---" + thisMonth + "---" + thisYear + "---")
@@ -200,25 +180,18 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
                 //to check this month and year
                 console.log(keyArr2[i]);
                 var tempArr = jsonCalObj[keyArr2[i]].events;
-                var tempDate = jsonCalObj[keyArr2[i]].eventDate;
                 console.log(tempArr);
-                console.log(tempDate);
 
-                //
                 for (var j = 0; j < tempArr.length; j++) {
-                    tempArr[j].eventDate = tempDate;
-                    //
                     $scope.monthEventsArr.push(tempArr[j]);
                 }
             }
         }
         console.log($scope.monthEventsArr);
     }
-
-
 })
 
- .controller('addEventsCtrl', function($scope, $http, $ionicHistory, $state, loadFromServerFactory, $rootScope, ionicTimePicker, serverFactory, localStorageService, localStorageFactory) {
+ .controller('addEventsCtrl', function($scope, $http, $q, $filter, $ionicHistory, $state, loadFromServerFactory, $rootScope, ionicTimePicker, serverFactory, localStorageService, localStorageFactory) {
     $scope.$on('$ionicView.beforeEnter', function(event, data) {
         $scope.editingObj = $rootScope.editingObj;
         //retrieve obj to edit
@@ -237,46 +210,23 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
             };
             $scope.eventObj.eventDate = $rootScope.myEventDate;
         }
-      //  console.log($scope.editingObj);
         console.log($scope.eventObj);
     });
 
     $scope.goBack = function() {
-        //$state.go('calenderView');
         $ionicHistory.goBack();
     }
-    $scope.startTimePick = function() {
-        var dateVar = "";
+
+   function timePicker() {
+       var deferred = $q.defer();
         var Obj = {
             callback: function(val) {
                 if (typeof (val) === 'undefined') {
                     console.log('Time not selected');
+                    deferred.reject('error');
                 } else {
-                    $scope.startValue = val;
-                    if ($scope.endValue < val) {
-                        val = $scope.endValue;
-                    }
-                    console.log("start value: " + val);
-                    var selectedTime = new Date(val * 1000);
-                    var startHours = selectedTime.getUTCHours();
-                    var startMinutes = selectedTime.getUTCMinutes();
-                    if (startMinutes < 10) {
-                        startMinutes = "0" + startMinutes;
-                    }
-                    if (startHours < 10) {
-                        startHours = "0" + startHours;
-                    }
-                    startTime = "";
-                    if (startHours > 12) {
-                        startTime = startHours - 12 + ":" + startMinutes + " PM"
-                    } else {
-                        startTime = startHours + ":" + startMinutes + " AM"
-                    }
-                    document.getElementById('startText').value = startTime;
-                    dateVar =  startTime;
-                    $scope.eventObj.eventStartTime = startTime;
-                    $scope.endTimeVisibility = true;
-                    console.log(dateVar);
+                    console.log("time value: " + val);
+                    deferred.resolve(val);
                 }
             },
             format: 12,
@@ -284,46 +234,40 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
             setLabel: 'Set',
             closeLabel: 'Close'
         };
+        
         ionicTimePicker.openTimePicker(Obj);
+       return deferred.promise;
     }
-    $scope.endTimePick = function() {
-        $scope.time;
-        var Obj = {
-            callback: function(val) {
-                if (typeof (val) === 'undefined') {
-                    console.log('Time not selected');
-                } else {
-                    console.log("end value: " + val);
-                    $scope.endValue = val;
-                    if ($scope.startValue > val) {
-                        val = $scope.startValue;
-                    }
-                    var selectedTime = new Date(val * 1000);
-                    var endHours = selectedTime.getUTCHours();
-                    var endMinutes = selectedTime.getUTCMinutes();
-                    if (endMinutes < 10) {
-                        endMinutes = "0" + endMinutes;
-                    }
-                    if (endHours < 10) {
-                        endHours = "0" + endHours;
-                    }
-                    endTime = "";
-                    if (endHours > 12) {
-                        endTime = endHours - 12 + ":" + endMinutes + " PM"
-                    } else {
-                        endTime = endHours + ":" + endMinutes + " AM"
-                    }
-                    document.getElementById('endText').value = endTime;
-                    $scope.eventObj.eventEndTime = endTime;
-                }
-            },
-            format: 12,
-            step: 1,
-            setLabel: 'Set',
-            closeLabel: 'Close'
-        };
-        ionicTimePicker.openTimePicker(Obj);
-    }
+
+  $scope.startTimePick = function startTimePicker() {
+    var promise = timePicker();
+     promise.then( function(val){
+         $scope.startValue = val;
+           if ($scope.endValue < val) {
+              val = $scope.endValue;
+           }
+           
+         var timeString = $filter('epochToDate')(val);
+     //    document.getElementById('startText').value = timeString;
+         $scope.eventObj.eventStartTime = timeString;
+         $scope.endTimeVisibility = true;   
+     });
+  }    
+
+  $scope.endTimePick = function endTimePicker() {
+    var promise = timePicker();
+     promise.then( function(val){
+         $scope.endValue = val;
+           if ($scope.startValue > val) {
+               val = $scope.startValue;
+           }
+
+         var timeString = $filter('epochToDate')(val);
+     //    document.getElementById('endText').value = timeString;
+         $scope.eventObj.eventEndTime = timeString;   
+     });
+  }  
+
  //   $scope.gPlace;
     $scope.disableTap = function() {
         console.log('entered disableTap...')
@@ -333,129 +277,64 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
             document.getElementById('searchBar').blur();
         });
     };
-     
-    var eventsArr = [];
-    var latt;
-    $scope.longi;
-    $scope.address;
-    $scope.save = function() {
-        $scope.visibility = true;
-        $scope.addDisable = false;
-        $scope.saveDisable = true;
-        if (!$scope.isEditingObjUndefined) {
-            console.log('not undefined......');
-            $scope.jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
-            $scope.jsonObj = $scope.jsonCalObj[$scope.eventObj.eventDate];
-        
-            $scope.jsonObj.events.splice($scope.editingObj.index, 1);
-        
-            $scope.jsonCalObj[$scope.eventObj.eventDate] = $scope.jsonObj;
-            localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj);
-            console.log('This event deleted...')
-        }
+ 
+    var eventsArr = [];  
+    var latt, longi, address;
+
+    $scope.save = function() {   
         console.log($rootScope.latLng);
-        console.log($rootScope.latLng.lat + " long: " + $rootScope.latLng.lng)
-        var isEmpty = angular.equals({}, $rootScope.latLng);
-        if (!isEmpty) {
-            console.log('entered if this function...');
+   
+        var isLatLngEmpty = angular.equals({}, $rootScope.latLng);
+        if (!isLatLngEmpty) {
+            console.log('LatLng obj is not empty...');
             latt = $rootScope.latLng.lat;
-            $scope.longi = $rootScope.latLng.lng;
-            $scope.address = $rootScope.latLng.address;
+            longi = $rootScope.latLng.lng;
+            address = $rootScope.latLng.address;
             $rootScope.latLng = {};
         } else {
             console.log('entered else...')
             latt = $scope.eventObj.lat;
-            $scope.longi = $scope.eventObj.long;
-            $scope.address = $scope.eventObj.address;
+            longi = $scope.eventObj.long;
+            address = $scope.eventObj.address;
         }
         console.log($scope.eventObj);
         var uniq = 'uniqId' + (new Date()).getTime();
           
-        eventsArr.push({
+        eventsArr[0] = {
             eventDate: $scope.eventObj.eventDate,
             eventName: $scope.eventObj.eventName,
             eventStartTime: $scope.eventObj.eventStartTime,
             eventEndTime: $scope.eventObj.eventEndTime,
             eventTask: $scope.eventObj.eventTask,
             lat: latt,
-            long: $scope.longi,
-            address: $scope.address,
+            long: longi,
+            address: address,
             uniqId: uniq
-        })
-        console.log(eventsArr);
-    }
-    $scope.add = function() {
-        $scope.addDisable = true;
-        $scope.saveDisable = false;
-        $scope.visibility = false;
-        $scope.eventObj.eventName = "";
-        document.getElementById('startText').value = null;
-        document.getElementById('endText').value = null;
-        document.getElementById('location').value = null;
-        $scope.eventObj.eventTask = "";
-    }
-    $scope.finish = function() {
-        $scope.saveDisable = false;
-        $scope.visibility = false;
-        $scope.eventObj.eventName = "";
-        document.getElementById('startText').value = null;
-        document.getElementById('endText').value = null;
-        document.getElementById('location').value = null;
-        $scope.eventObj.eventTask = "";
-        $scope.jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
-        $scope.jsonObj = $scope.jsonCalObj[$scope.eventObj.eventDate];
-        console.log($scope.jsonObj);
-        if ($scope.jsonObj != undefined) {
-            for (var i = 0; i < eventsArr.length; i++) {
-                $scope.jsonObj.events.push(eventsArr[i]);
-                console.log(eventsArr[i]);
-            }
- 
-            if (!$scope.isEditingObjUndefined) {
-                 var doc2send = {
-                   myObj: JSON.stringify({eArr:eventsArr, uId:$scope.editingObj.uniqId})
-                 };
-                 serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/editEvents");
-              // serverFactory.serverToServer(doc2send, "http://calenderappevents.azurewebsites.net/deleteEvents");
-            } else {
-                 serverToServer({eArr:eventsArr});
-            }  
-            
-            $scope.jsonCalObj[$scope.eventObj.eventDate] = $scope.jsonObj;
-            console.log($scope.jsonObj);
-            localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj);
-        } else {
-            var myEventReadyObj = {};
-            var arr = [];
-            myEventReadyObj.eventDate = $scope.eventObj.eventDate;
-            myEventReadyObj.events = eventsArr;
-            $scope.jsonCalObj[$scope.eventObj.eventDate] = myEventReadyObj;
-            localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj)
-            console.log(myEventReadyObj);
-            arr[0] = myEventReadyObj
-            serverToServer({eArr:arr});
         }
+         
+        console.log(eventsArr[0]);
+      
+        if (!$scope.isEditingObjUndefined) {
+             var doc2send = {
+               myObj: JSON.stringify(eventsArr[0]), 
+               uId:$scope.editingObj.uniqId
+             };
+          //   var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/editEvents");
+           var promise = serverFactory.serverToServer(doc2send, "http://calenderappevents.azurewebsites.net/editEvents");
+             promise.then(function(value) {
+                console.log(value);
+                $state.go('event1');
+             }) 
+         } else {
+         //    var promise = serverFactory.serverToServer(eventsArr[0] , "http://192.168.0.13:3000/addEvents");
+           var promise = serverFactory.serverToServer(eventsArr[0], "http://calenderappevents.azurewebsites.net/addEvents");
+             promise.then(function(value) {
+               console.log(value);
+               $state.go('event1');
+             }) 
+         }
+    }
 
-        $state.go('event1');
-    }
-    $scope.$on('$ionicView.beforeLeave', function(event, data) {
-        eventsArr = [];
-        //loadFromServerFactory.loadEvents();
-        console.log('before leave: array eventsArr cleared')
-    });
-    if (localStorageService.isSupported) {
-        console.log('local storage supported');
-    }
-    function serverToServer(obj) {
-        var doc2send = {
-            myObj: JSON.stringify(obj)
-        };
-        var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/addEvents");
-     //   var promise = serverFactory.serverToServer(doc2send, "http://calenderappevents.azurewebsites.net/addEvents");
-        promise.then(function(value) {
-            console.log(value);
-        })
-    }
 }).controller('emptyEventsPageCtrl', function($scope, $ionicHistory, $state, $rootScope) {
     $scope.goBack = function() {
         $ionicHistory.goBack();
@@ -467,9 +346,18 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
     $scope.$on('$ionicView.beforeEnter', function() {
         $scope.fullEvent = $rootScope.fullEventObj
         console.log('showFullEventCtrl');
-        // $rootScope.fullEventObj = {};
         console.log($scope.fullEvent)
+        floatButtonAdjust();
     });
+
+
+    function floatButtonAdjust() {
+       var itemHeight = document.getElementById('eNameItem').style.height;
+       console.log(itemHeight);
+       var btnHeight =  document.getElementById('floatBtn').style.top;
+       console.log(btnHeight);
+    }
+
     $scope.editEvent = function() {
         $rootScope.editingObj = $scope.fullEvent;
         console.log($scope.fullEvent);
@@ -480,34 +368,38 @@ angular.module('starter.controller', []).controller('event1Ctrl', function($scop
         $state.go('map2');
     }
     $scope.deleteEvent = function() {
-        console.log($scope.fullEvent.index);
         $scope.jsonCalObj = localStorageFactory.getItem('myCalenderEvents');
         $scope.jsonObj = $scope.jsonCalObj[$scope.fullEvent.eventDate];
-        $scope.jsonObj.events.splice($scope.fullEvent.index, 1);
+        console.log($scope.jsonCalObj);
+
         var remainingEvents = $scope.jsonObj.events.length;
-        if (remainingEvents == 0) {
-            delete $scope.jsonCalObj[$scope.fullEvent.eventDate];
-            localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj);
-            serverToServer($scope.fullEvent.eventDate, $scope.fullEvent.uniqId);
-            $state.go('calenderView');
+        if (remainingEvents == 1) {
+            console.log('last event..');
+            var doc2send = {
+              eDate: $scope.fullEvent.eventDate,
+              eId: $scope.fullEvent.uniqId
+            };
+        //   var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/deleteEvents");
+          var promise = serverFactory.serverToServer(doc2send, "http://calenderappevents.azurewebsites.net/deleteEvents");
+            promise.then(function(value) {
+              console.log(value);
+              $state.go('calenderView');
+            })
         } else {
-            $scope.jsonCalObj[$scope.fullEvent.eventDate] = $scope.jsonObj;
-            localStorageFactory.submit('myCalenderEvents', $scope.jsonCalObj);
-            serverToServer($scope.fullEvent.eventDate, $scope.fullEvent.uniqId);
-            $ionicHistory.goBack();
+            console.log('not last event..');
+            var doc2send = {
+              eDate: $scope.fullEvent.eventDate,
+              eId: $scope.fullEvent.uniqId
+            };
+        //    var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/deleteEvents");
+          var promise = serverFactory.serverToServer(doc2send, "http://calenderappevents.azurewebsites.net/deleteEvents");
+            promise.then(function(value) {
+              console.log(value);
+              $ionicHistory.goBack();
+            })   
         }
     }
-    function serverToServer(date, uniqId) {
-        var doc2send = {
-            eDate: date,
-            eId: uniqId
-        };
-        var promise = serverFactory.serverToServer(doc2send, "http://192.168.0.13:3000/deleteEvents");
-     //   var promise = serverFactory.serverToServer(doc2send, "http://calenderappevents.azurewebsites.net/deleteEvents");
-        promise.then(function(value) {
-            console.log(value);
-        })
-    }
+ 
     $scope.goBack = function() {
         $rootScope.editingObj = {};
         $ionicHistory.goBack();
