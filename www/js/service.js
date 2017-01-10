@@ -49,32 +49,62 @@ angular.module('starter.services', [])
   }
 })  
 
-.factory("loadFromServerFactory", function(serverFactory, localStorageFactory)  {
+.factory("compareEventsService", function(localStorageFactory, $rootScope)  {
+  $rootScope.diffEvents = [];
 
-  function loadEvents() {
-    var promise = serverFactory.serverToServer('', "http://192.168.0.13:3000/getEvents");
-   // var promise = serverFactory.serverToServer('', "http://calenderappevents.azurewebsites.net/getEvents");
-    promise.then(function(data) {
-        for (var key in data) {
-            var oldObj = data[key];
-            var replacedKey = key.replace(/_/g, ' ');
-            data[replacedKey] = oldObj;
-            delete data[key];
-        }
-        localStorageFactory.submit('myCalenderEvents', data);
-        console.log(data);
-    }) 
-    return;  
-  } 
+  function compareEvents(data) {
+ 
+    var localJson = localStorageFactory.getItem('oldJson');
+    console.log(localJson);
+     for(var k=0; k<data.length; k++) {
+       var obj = data[k];
+       var strDate = (new Date(obj.Date)).toString()
+       console.log(obj);
+       if(localJson[obj.Date] == undefined){
+         console.log('some new event pushed');
+          if($rootScope.diffEvents.indexOf(strDate) == -1){
+             $rootScope.diffEvents.push(strDate);
+          }
+       } else {
+          var localObjArr = localJson[obj.Date].events;
+          var serverObjID = obj.ID;   
+
+           var i = 0;
+           for(i=0; i<localObjArr.length; i++){
+             var localeventId = localObjArr[i].eventId;
+
+             if(localeventId == serverObjID){
+               break;
+             }
+           }  
+            
+           if(i == localObjArr.length){
+              console.log('some event edited');
+              if($rootScope.diffEvents.indexOf(strDate) == -1){
+                $rootScope.diffEvents.push(strDate);
+              }
+              
+              continue;
+           }
+       }
+     }
+     console.log($rootScope.diffEvents);
+     if($rootScope.diffEvents.length == 0) { 
+           var newJson = localStorageFactory.getItem('myCalenderEvents');
+           localStorageFactory.submit('oldJson', newJson);
+     }
+   }
    
     return {
-      loadEvents:loadEvents
+      compareEvents:compareEvents
     }
 })  
 
-.factory("serverFactory", function($http, $q, localStorageFactory, $state)  {
+.factory("serverFactory", function($http, $q, compareEventsService, localStorageFactory, $state)  {
   
    function serverToServer(doc2send, Url) {
+   var jsonLocal = localStorageFactory.getItem('myCalenderEvents');
+     
     var deferred = $q.defer();  
     console.log(doc2send);
   
@@ -93,17 +123,18 @@ angular.module('starter.services', [])
           alert(data);  
           $state.go('calenderView');
         }
-        
+/*        
         for (var key in data) {
              var oldObj = data[key];
              var replacedKey = key.replace(/_/g, ' ');
              data[replacedKey] = oldObj;
              delete data[key];
          }
+*/
          localStorageFactory.submit('myCalenderEvents', data);
          console.log(data);
+       
 
- //      localStorageFactory.submit('myCalenderEvents', data[0]);
          deferred.resolve(data);
          console.log(status); 
     }).

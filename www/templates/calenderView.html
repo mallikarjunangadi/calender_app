@@ -1,14 +1,15 @@
 <ion-view view-title="Calender" ng-controller="calCtrl">
  <ion-header-bar class="sub-head bar-dark" style="position:relative;" >
-  <button class="button button-clear button-positive" style="position:relative; width:auto;display:inline;" ng-click="">
+  <button class="button button-clear button-positive" style="position:relative; width:auto;display:inline;" ng-click="goBack()">
      <i class="ion-android-cancel" style="font-size:32px; padding-left:8px; position:absolute; color:white;text-align:center;top:0px;"> </i>
   </button>
+  <h4 style="color:white;margin:auto;">Calender</h4>
  </ion-header-bar>
+
 <div id="calenderDiv">
  <ion-content>
-  <onezone-datepicker datepicker-object="onezoneDatepicker">
-    
-  </onezone-datepicker>
+
+  <onezone-datepicker datepicker-object="onezoneDatepicker"></onezone-datepicker>
 
  <div id="scrollArea">
   <ion-list>
@@ -21,11 +22,12 @@
         <div ng-if="value.eventName != undefined"> 
          <p> {{value.eventName}} </p>
         </div>  
-       <p> {{value.eventTask}} </p>      
+       <p> {{value.eventTask}} </p>
+      </div>       
     </ion-item> 
   </ion-list> 
  </div> 
  
- </div>
  </ion-content>
+</div> 
 </ion-view>  

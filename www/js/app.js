@@ -26,11 +26,6 @@ angular.module('starter', ['ionic', 'starter.controller', 'starter.filter', 'sta
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
-
-   .state('event', {
-    url: '/event',
-    templateUrl: 'templates/event.html'
-  })
   
    .state('event1', {
     url: '/event1',
@@ -51,18 +46,12 @@ angular.module('starter', ['ionic', 'starter.controller', 'starter.filter', 'sta
     url: '/addEvents',
     templateUrl: 'templates/addEvents.html'
   })
-/*
-  .state('emptyEventPage', {
-    url: '/emptyEventPage',
-    templateUrl: 'templates/emptyEventPage.html'
-  })
-*/
+
   .state('showFullEvent', {
     url: '/showFullEvent',
     templateUrl: 'templates/showFullEvent.html'
   })
- 
-   
+    
   $urlRouterProvider.otherwise('/calenderView'); 
 })
 
