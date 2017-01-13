@@ -22,13 +22,11 @@ angular.module('starter.directive', [])
 
                $rootScope.latLng = {};
                $rootScope.latLng = data;
-
-                console.log(data);
               } 
-
-                scope.$apply(function() {
-                    model.$setViewValue(element.val());                
-                });
+              
+               scope.$apply(function() {
+                   model.$setViewValue(element.val());                
+               });
             });
         }
     };

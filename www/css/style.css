@@ -101,7 +101,7 @@
   background-color: transparent; 
 }
 
-#calenderDiv #scrollArea {
+#calenderDiv #scrollArea1 {
   height: 50vh;
   overflow: auto;
 }

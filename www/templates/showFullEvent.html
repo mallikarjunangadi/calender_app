@@ -1,73 +1,33 @@
 <ion-view view-title="event Details" ng-controller="showFullEventCtrl">
-<!--
-  <ion-nav-buttons side="left">
-   <button class="button button-clear" ng-click="goBack()" >
-    <i class="icon ion-ios-arrow-back"></i> Back
+ <ion-header-bar class="sub-head bar-dark" style="position:relative;border:0px;" >
+   <button class="button button-clear button-positive" style="position:relative; width:auto;display:inline;" ng-click="goBack()">
+    <i class="ion-android-cancel" style="font-size:32px; padding-left:8px; position:absolute; color:white;text-align:center;top:0px;"> </i>
    </button>
-  </ion-nav-buttons> 
--->
-  <ion-header-bar class="sub-head bar-dark" style="position:relative;border:0px;" >
-    <button class="button button-clear button-positive" style="position:relative; width:auto;display:inline;" ng-click="goBack()">
-     <i class="ion-android-cancel" style="font-size:32px; padding-left:8px; position:absolute; color:white;text-align:center;top:0px;"> </i>
-    </button>
-  </ion-header-bar>
+ </ion-header-bar>
   
-<div ng-hide = "hideEditnDeleteBtn">
+<div ng-if = "AppUserInformation.WritePriv == true">
  <ion-floating-button bottom="90px" click="deleteEvent()" has-footer="false" button-color="#000" icon="ion-trash-b" icon-color="#fff">
  </ion-floating-button>
 
  <ion-floating-button click="editEvent()" has-footer="false" button-color="#000" icon="ion-edit" icon-color="#fff">
  </ion-floating-button>
 </div> 
-<!-- <ion-content>
-   <ion-list class="eventDetailsList">
 
-    <ion-item ng-if='fullEvent.eventName != undefined && fullEvent.eventName != ""'> 
-     <span class="eIcon">Event Name :</span>
-     <span> {{fullEvent.eventName}} </span>
-    </ion-item>
-    
-    <ion-item> 
-     <span>Event Date:</span>
-     <span> {{fullEvent.eventDate}} </span>
-    </ion-item>
-
-    <ion-item ng-if='fullEvent.eventEndTime != undefined && fullEvent.eventEndTime != ""'> 
-      <span>Timings : {{fullEvent.eventStartTime}}</span> 
-      <span> - {{fullEvent.eventEndTime}}</span>       
-    </ion-item>
-
-    <ion-item ng-if='fullEvent.long != undefined && fullEvent.long != ""'> 
-     <span>Location:</span>
-     <p style="word-wrap: break-word;white-space:pre-wrap;color:blue;" ng-click="map(fullEvent.long, fullEvent.lat, fullEvent.address)"><i class="icon ion-location"></i> {{fullEvent.address}}</p>
-    </ion-item>
-
-    <ion-item ng-if='fullEvent.eventTask != undefined && fullEvent.eventTask != ""'> 
-     <span>Description:</span>
-      <p style="word-wrap: break-word;white-space:pre-wrap;"> {{fullEvent.eventTask}} </p>  
-    </ion-item>
-  
-  </ion-list>
-
- </ion-content>  -->
-
-  <ion-content>
-       
+ <ion-content>
+        
    <ion-list class="eventDetailsList1" style="">
     <ion-item id="eNameItem" style="min-height:60px; border:1px solid black;text-align:center;"> 
      <span>  {{fullEvent.eventName}}</span><br/>
     </ion-item>
    </ion-list>
-<!--
-<div ng-hide = "hideEditnDeleteBtn">  
-   <button id="floatBtn" class="button-clear" ng-click="editEvent()" style="border-radius:50%;background-color:black;text-align:center;position:relative;left:5%;top:-20px;display:block;width:40px;height:40px;"><i style="font-size:25px;color:white;margin:auto;" class="icon ion-edit"></i></button> 
-   <button id="floatBtn" class="button-clear" ng-click="deleteEvent()" style="border-radius:50%;background-color:black;text-align:center;position:relative;left:85%;top:-60px;display:block;width:40px;height:40px;"><i style="font-size:25px;color:white;margin:auto;" class="ion-trash-b"></i></button>
-</div>  -->
 
    <ion-list class="eventDetailsList2">
     <ion-item> 
      <div class="iconDiv"><i class="icon ion-android-time"></i></div>
-     <div class="oDiv"><span> {{fullEvent.eventDate}} </span> <br/> <span> {{fullEvent.eventStartTime}}</span> <span ng-if="fullEvent.eventEndTime != undefined && fullEvent.eventEndTime != ''"> - {{fullEvent.eventEndTime}}</span></div>
+     <div class="oDiv"><span> {{fullEvent.eventDate}}     </span> <br/> 
+                       <span> {{fullEvent.eventStartTime}}</span> 
+                       <span ng-if="fullEvent.eventEndTime != undefined && fullEvent.eventEndTime != ''"> - {{fullEvent.eventEndTime}}</span>
+     </div>
     </ion-item>
 
     <ion-item ng-if='fullEvent.long != undefined && fullEvent.long != ""'> 
